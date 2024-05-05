@@ -1,11 +1,12 @@
 {
-  "name": "user",
+  "name": "node-bff-demo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start-order": "node serv/OrderServ",
+    "start-user": "node serv/UserServ",
     "start": "node index",
-    "start-bff": "node bff",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

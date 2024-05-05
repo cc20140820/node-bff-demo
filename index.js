@@ -1,27 +1,24 @@
 const http = require("http")
+const { publicRequest } = require("./utils")
+const {
+  BASE_URL,
+  BFF_PORT,
+  ORDER_SERVER_PORT,
+  USER_SERVER_PORT,
+} = require("./constant")
 
-// 订单服务
-const orderApp = http.createServer((req, res) => {
-  handleOrderInput(req, res)
+const BFF = http.createServer((req, res) => {
+  handleBFF(req, res)
 })
 
-orderApp.listen(8081, () => {
-  console.log("Order Server is running at 8081 port")
+BFF.listen(BFF_PORT, () => {
+  console.log(`BFF Server is running at ${BFF_PORT} port`)
 })
 
-// 数据服务
-const dataApp = http.createServer((req, res) => {
-  handleDataInput(req, res)
-})
-
-dataApp.listen(8082, () => {
-  console.log("Data Server is running at 8082 port")
-})
-
-function handleOrderInput(req, res) {
+function handleBFF(req, res) {
   switch (req.url) {
     case "/order/add":
-      res.end('{ code: 200, msg: "success", data: "" }')
+      addOrder(req, res)
       break
     default:
       res.end('{ code: 500, msg: "route not found", data: "" }')
@@ -29,13 +26,27 @@ function handleOrderInput(req, res) {
   }
 }
 
-function handleDataInput(req, res) {
-  switch (req.url) {
-    case "/data/add":
-      res.end('{ code: 200, msg: "success", data: "" }')
-      break
-    default:
-      res.end('{ code: 500, msg: "route not found", data: "" }')
-      break
+// 处理添加订单方法
+function addOrder(req, res) {
+  if (req.method !== "POST") {
+    res.end('{ code: 500, msg: "route not found", data: "" }')
+    return
   }
+
+  let data = ""
+  req.on("data", (chunk) => {
+    data += chunk
+  })
+
+  req.on("end", async () => {
+    const orderResult = await publicRequest(
+      `${BASE_URL}:${ORDER_SERVER_PORT}/order/add`,
+      data
+    )
+    const dataResult = await publicRequest(
+      `${BASE_URL}:${USER_SERVER_PORT}/data/add`,
+      data
+    )
+    res.end(JSON.stringify({ orderResult, dataResult }))
+  })
 }
