@@ -1,23 +1,26 @@
-// 数据服务
-
-const http = require("http")
+// 用户服务
+const express = require("express")
 const { USER_SERVER_PORT } = require("../constant")
 
-function handleDataInput(req, res) {
-  switch (req.url) {
-    case "/data/add":
-      res.end('{ code: 200, msg: "success", data: "" }')
-      break
-    default:
-      res.end('{ code: 500, msg: "route not found", data: "" }')
-      break
-  }
-}
+const USER_MAP = [
+  { userId: "11111", userName: "Harry Potter", age: 18 },
+  { userId: "11112", userName: "Hermione Granger", age: 16 },
+]
 
-const dataApp = http.createServer((req, res) => {
-  handleDataInput(req, res)
+const app = express()
+app.get("/user/:id", (req, res) => {
+  const id = req.params.id
+  const user = USER_MAP.find((v) => v.userId === id)
+  if (user) {
+    res.json({
+      success: true,
+      data: user,
+    })
+  } else {
+    res.status(404).send("Info not found")
+  }
 })
 
-dataApp.listen(USER_SERVER_PORT, () => {
-  console.log(`Data Server is running at ${USER_SERVER_PORT} port`)
+app.listen(USER_SERVER_PORT, () => {
+  console.log(`User Server is running at ${USER_SERVER_PORT} port`)
 })

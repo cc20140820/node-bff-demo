@@ -1,22 +1,26 @@
 // 订单服务
-const http = require("http")
+const express = require("express")
 const { ORDER_SERVER_PORT } = require("../constant")
 
-function handleOrderInput(req, res) {
-  switch (req.url) {
-    case "/order/add":
-      res.end('{ code: 200, msg: "success", data: "" }')
-      break
-    default:
-      res.end('{ code: 500, msg: "route not found", data: "" }')
-      break
-  }
-}
+const DATA_MAP = [
+  { productId: "1", productName: "weed", price: 200 },
+  { productId: "2", productName: "gun", price: 600 },
+]
 
-const orderApp = http.createServer((req, res) => {
-  handleOrderInput(req, res)
+const app = express()
+app.get("/order/:id", (req, res) => {
+  const id = req.params.id
+  const item = DATA_MAP.find((v) => v.productId === id)
+  if (item) {
+    res.json({
+      success: true,
+      data: item,
+    })
+  } else {
+    res.status(404).send("Info not found")
+  }
 })
 
-orderApp.listen(ORDER_SERVER_PORT, () => {
+app.listen(ORDER_SERVER_PORT, () => {
   console.log(`Order Server is running at ${ORDER_SERVER_PORT} port`)
 })
