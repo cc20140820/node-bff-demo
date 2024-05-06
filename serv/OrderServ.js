@@ -15,6 +15,7 @@ app.get("/order/:id", (req, res) => {
     res.json({
       success: true,
       data: item,
+      errorMessage: "",
     })
   } else {
     res.status(404).send("Info not found")

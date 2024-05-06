@@ -21,6 +21,7 @@ app.get("/queryInfo", async (req, res) => {
     res.json({
       success: true,
       data: resInfo,
+      errorMessage: "",
     })
   } else {
     res.status(404).send("Info not found")
